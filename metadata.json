@@ -1,0 +1,8 @@
+{
+  "name": "Aura Chat AI",
+  "description": "A fast, intelligent, and versatile AI chatbot powered by Google Gemini with multi-turn conversations, persona customization, web search grounding, and smart prompt shortcuts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
