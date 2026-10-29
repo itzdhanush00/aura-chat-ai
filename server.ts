@@ -1,8 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import JSZip from 'jszip';
 
 dotenv.config();
 
@@ -29,6 +31,57 @@ app.get('/api/health', (_req, res) => {
     status: 'ok',
     hasKey: Boolean(process.env.GEMINI_API_KEY),
   });
+});
+
+// Download full project source code as a ZIP file
+app.get('/api/project/zip', async (_req, res) => {
+  try {
+    const zip = new JSZip();
+
+    function addDirToZip(dirPath: string, zipFolder: JSZip) {
+      const items = fs.readdirSync(dirPath);
+      for (const item of items) {
+        if (
+          item === 'node_modules' ||
+          item === '.git' ||
+          item === 'dist' ||
+          item === '.env' ||
+          item === '.DS_Store' ||
+          item === 'bun.lock' ||
+          item.startsWith('.vite')
+        ) {
+          continue;
+        }
+        const fullPath = path.join(dirPath, item);
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+          const sub = zipFolder.folder(item);
+          if (sub) addDirToZip(fullPath, sub);
+        } else {
+          const content = fs.readFileSync(fullPath);
+          zipFolder.file(item, content);
+        }
+      }
+    }
+
+    addDirToZip(__dirname, zip);
+
+    const buffer = await zip.generateAsync({
+      type: 'nodebuffer',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 },
+    });
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="aura-chat-ai.zip"'
+    );
+    res.send(buffer);
+  } catch (err: any) {
+    console.error('Failed to create project zip:', err);
+    res.status(500).json({ error: 'Failed to create zip file' });
+  }
 });
 
 function resolveModelAndConfig(body: any) {

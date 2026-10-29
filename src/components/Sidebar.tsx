@@ -300,12 +300,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between text-xs text-slate-400">
             <button
               onClick={onOpenExport}
-              disabled={sessions.length === 0}
-              className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 hover:bg-slate-800 hover:text-slate-200 disabled:opacity-40"
-              title="Export conversations"
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 hover:bg-slate-800 hover:text-slate-200 text-slate-300"
+              title="Export conversations or download project ZIP"
             >
-              <Download className="h-3.5 w-3.5" />
-              <span>Export</span>
+              <Download className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Export / ZIP</span>
             </button>
             <button
               onClick={onOpenSettings}
