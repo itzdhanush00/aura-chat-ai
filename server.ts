@@ -370,7 +370,7 @@ async function startServer() {
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } } else {
+  } else {
     app.use(express.static(distDir));
     app.get('*', (_req, res) => {
       res.sendFile(path.resolve(distDir, 'index.html'));
